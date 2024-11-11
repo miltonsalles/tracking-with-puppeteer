@@ -40,7 +40,7 @@ app.get('/get-client-id', async (req, res) => {
     res.json({ clientId });
   } catch (error) {
     console.error('Erro ao obter o clientId:', error);
-    res.status(500).json({ error: 'Erro ao obter o clientId', message: error });
+    res.status(500).json({ error: `Erro ao obter o clientId: ${error.message}` });
   }
 });
 
