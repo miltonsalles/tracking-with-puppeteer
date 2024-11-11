@@ -1,11 +1,11 @@
 const express = require('express');
 const puppeteer = require('puppeteer-core');
 const { exec } = require('child_process');
+const chromium = require('chromium');
 
 const app = express();
 const port = 3000;
 
-// Função para verificar o caminho do Chromium
 exec('which chromium', (error, stdout, stderr) => {
   if (error) {
     console.error(`Erro ao localizar o Chromium: ${error}`);
@@ -16,9 +16,8 @@ exec('which chromium', (error, stdout, stderr) => {
 
 app.get('/get-client-id', async (req, res) => {
   try {
-    // Certifique-se de que o caminho do Chromium esteja correto
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium-browser', // Pode ser ajustado com o caminho correto
+      executablePath: chromium.path,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       headless: true,
       defaultViewport: {
