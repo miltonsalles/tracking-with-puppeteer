@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 async function getClientId(trackingId) {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
   try {
@@ -17,7 +17,7 @@ async function getClientId(trackingId) {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${trackingId}');
+            gtag('config', '${trackingId}', { send_page_view: false });
           </script>
         </head>
         <body>
@@ -26,9 +26,14 @@ async function getClientId(trackingId) {
       </html>
     `);
 
-    // Espera o gtag.js carregar e captura o client_id do Google Analytics
+    await page.waitForTimeout(5000);
+
     const clientId = await page.evaluate((trackingId) => {
       return new Promise((resolve, reject) => {
+        if (typeof gtag === 'undefined') {
+          return reject('gtag não está definido - o script do GA4 pode não ter carregado.');
+        }
+
         gtag('get', trackingId, 'client_id', (clientId) => {
           if (clientId) {
             resolve(clientId);
@@ -42,7 +47,6 @@ async function getClientId(trackingId) {
     await browser.close();
     return clientId;
   } catch (error) {
-    console.error('Erro durante o processo do Puppeteer:', error);
     await browser.close();
     throw new Error('Erro ao obter o Client ID');
   }
