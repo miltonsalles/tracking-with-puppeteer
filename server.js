@@ -7,7 +7,7 @@ const port = 3000;
 app.get('/get-client-id', async (req, res) => {
   try {
     const browser = await puppeteer.launch({
-      devtools: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
       defaultViewport: {
         width: 1280,
         height: 1024,
@@ -40,7 +40,7 @@ app.get('/get-client-id', async (req, res) => {
     res.json({ clientId });
   } catch (error) {
     console.error('Erro ao obter o clientId:', error);
-    res.status(500).json({ error: 'Erro ao obter o clientId' });
+    res.status(500).json({ error: 'Erro ao obter o clientId', message: error });
   }
 });
 
