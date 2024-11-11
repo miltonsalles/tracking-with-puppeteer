@@ -12,7 +12,7 @@ app.get('/get-client-id', async (req, res) => {
         width: 1280,
         height: 1024,
       },
-      headless: false,
+      headless: true,
     });
     const page = await browser.newPage();
 
